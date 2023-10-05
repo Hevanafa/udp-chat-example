@@ -2,6 +2,8 @@ Imports System
 Imports System.Net
 Imports System.Net.Sockets
 Imports System.Text
+Imports System.Text.Json
+Imports UdpClassLib2
 
 Module Program
     Sub Main(args As String())
@@ -14,32 +16,61 @@ Module Program
 
         Dim remote_endpoints As New HashSet(Of IPEndPoint)
 
+        Console.WriteLine($"Listening to port { server_port }")
+
         Do
             Try
                 Dim data = udp.Receive(endpoint)
-                Dim remote_ep$ = endpoint.ToString
+                Dim msg_str$ = Encoding.ASCII.GetString(data)
 
-                Dim message$ = Encoding.ASCII.GetString(data)
+                Dim remote_ip$ = endpoint.ToString
+                Dim remote_ep = IPEndPoint.Parse(remote_ip)
 
-                Console.WriteLine("Client [{0}]:", remote_ep)
+                ' register user
+                If msg_str.StartsWith("hi_") Then
+                    remote_endpoints.Add(endpoint)
 
-                Dim temp = IPEndPoint.Parse(remote_ep)
+                    Console.WriteLine($"{endpoint} joined the conversation.")
 
-                remote_endpoints.Add(endpoint)
+                    Continue Do
+                End If
 
-                Console.WriteLine(message)
+                If msg_str.StartsWith("bye_") Then
+                    remote_endpoints.Remove(endpoint)
 
-                ' Todo: broadcast to all remote_ports
-                'udp.Send({1}, 1, endpoint)
-                ' Dim res$ = "[Server]: Yahaha"
+                    Console.WriteLine($"{endpoint} left the conversation.")
 
-                Dim res$ = $"Client [{endpoint}]: " + message
+                    Continue Do
+                End If
+
+                Dim message = JsonSerializer.Deserialize(Of MessagePacket)(msg_str)
+
+                Console.WriteLine("Client [{0}]:", remote_ip)
+                Console.WriteLine(msg_str)
+
+                ' send to all the clients
+                Dim display_name$ = IIf(Len(message.display_name) > 0, message.display_name, $"anonymous_{remote_ep.Port}")
+                Dim res$ = $"{Date.Now:HH:mm} [{display_name}]: {message.contents}"
 
                 For Each ep In remote_endpoints
+                    'Try
                     udp.Send(Encoding.ASCII.GetBytes(res$), Len(res), ep)
+                    'Catch ex As Exception
+                    '    remote_endpoints.Remove(ep)
+                    '    Console.WriteLine($"Removed {ep} due to the above exception.")
+                    'End Try
                 Next
-            Catch ex As Exception
-                Console.WriteLine(ex.ToString)
+            Catch ex As SocketException
+                ' WSAECONNRESET = 10054
+                ' Ref: https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
+                If ex.ErrorCode = 10054 Then
+
+                Else
+                    Console.WriteLine(ex.ToString)
+                End If
+
+                'remote_endpoints.Remove(endpoint)
+                'Console.WriteLine($"Removed {endpoint} due to the above exception.")
             End Try
         Loop Until done
 

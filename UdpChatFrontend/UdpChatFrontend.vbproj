@@ -20,4 +20,12 @@
     <Import Include="System.Windows.Shapes" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="7.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UdpClassLib2\UdpClassLib2.vbproj" />
+  </ItemGroup>
+
 </Project>

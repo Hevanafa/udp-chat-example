@@ -5,10 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UdpChatFrontend"
         mc:Ignorable="d"
-        Title="MainWindow" Height="334" Width="438" Loaded="Window_Loaded" Unloaded="Window_Unloaded">
+        Title="MainWindow" Height="334" Width="438" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
-        <TextBox x:Name="txbChatLog" Margin="5,5,5,0" TextWrapping="Wrap" Height="154" VerticalAlignment="Top"/>
-        <TextBox x:Name="txbMessage" Margin="5,0,5,128" TextWrapping="Wrap" Height="21" VerticalAlignment="Bottom"/>
+        <TextBox x:Name="txbChatLog" Margin="5,5,5,101" TextWrapping="Wrap" IsReadOnly="True"/>
+        <TextBox x:Name="txbDisplayName" Height="19" Margin="5,0,0,36" Width="154" MaxLength="30" MaxLines="1" VerticalAlignment="Bottom" d:LayoutOverrides="Width, Height" HorizontalAlignment="Left"/>
+        <TextBox x:Name="txbMessage" Margin="5,0,5,5" Height="21" VerticalAlignment="Bottom" MaxLength="255" MaxLines="1"/>
+        <Label x:Name="label" Content="Display name" Margin="5,0,0,65" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="154"/>
 
     </Grid>
 </Window>

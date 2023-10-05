@@ -4,6 +4,15 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>UdpChatServer</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
+    <ImportedNamespaces>Microsoft.VisualBasic=True,System=True,System.Collections=True,System.Collections.Generic=True,System.Diagnostics=True,System.Linq=True,System.Xml.Linq=True,System.Threading.Tasks=True,UdpChatServer=True</ImportedNamespaces>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="7.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UdpClassLib2\UdpClassLib2.vbproj" />
+  </ItemGroup>
 
 </Project>
